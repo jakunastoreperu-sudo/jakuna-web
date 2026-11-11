@@ -219,6 +219,13 @@ a.btn{text-decoration:none}
 .modal p{font-size:.9rem;color:var(--tinta-2);line-height:1.5;margin-bottom:16px}
 .modal .luki{margin:0 auto}
 @media (max-width:380px){.dos{grid-template-columns:1fr}.saldo{font-size:2.6rem}}
+.paso-y{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;text-align:left;background:#F5F8F7;border-radius:18px;padding:12px 14px;margin:10px 0}
+.paso-y .pn{width:28px;height:28px;border-radius:50%;background:var(--tinta);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:.88rem;grid-row:span 3;align-self:start;margin-top:2px}
+.paso-y p{margin:0;font-size:.86rem;color:var(--tinta-2);line-height:1.4}
+.paso-y .dato{font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:.03em;color:var(--tinta);word-break:break-all}
+.paso-y .cbtn{justify-self:start;border:1.5px solid var(--tinta);border-radius:999px;background:transparent;color:var(--tinta);padding:7px 14px;font-size:.82rem;font-weight:600;cursor:pointer;margin-top:4px}
+.paso-y .cbtn.principal{background:var(--tinta);color:#fff}
+.paso-y .ojo-y{font-size:.76rem;color:var(--gris)}
 
 /* ================= WEB JAKUNA ================= */
 body{display:block;padding:0;background:var(--menta)}
@@ -440,6 +447,9 @@ footer a:hover{color:#4FD6A6}
 .bolas{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .bola{width:36px;height:36px;border-radius:50%;background:var(--tinta);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:.98rem;box-shadow:inset 0 0 0 3px #4FD6A6;flex-shrink:0}
 .coin-mini{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE59A,#F2B63D 60%,#C9850F);color:#6B4A00;display:inline-flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:.66rem}
+
+.jctas.uno{grid-template-columns:1fr}
+.jcard.gool .gpart{font-family:var(--display);font-weight:700;font-size:.95rem;line-height:1.2;margin-top:4px}
 </style>
 </head>
 <body>
@@ -544,7 +554,7 @@ footer a:hover{color:#4FD6A6}
 
 <section id="juegos">
   <div class="wrap">
-    <div class="sec-head reveal"><span class="tag-sec">Elige tu juego</span><h2>Una luca, dos formas de ganar S/ 100</h2><p>¿Prefieres la emoción de cada hora o esperar la noche? Tú decides. Paga con Yape o con tus Lukitas.</p></div>
+    <div class="sec-head reveal"><span class="tag-sec">Elige tu juego</span><h2>Dos sorteos y un pronóstico de fútbol</h2><p>Luca Express cada hora, A una Luca cada noche y Luki Gool para los partidos de la Liga 1 y la Champions.</p></div>
     <div class="juegos" id="juegosList"></div>
   </div>
 </section>
@@ -716,6 +726,10 @@ const CONFIG = {
       link: "https://jakunastoreperu-sudo.github.io/A-una-luca/",
       api: "https://script.google.com/macros/s/AKfycbxRgvyl-UstxrwkMS81b0l0Z-Okq0tdeQDi7sLtryra7HPW-h0CQ_HHH-EeK1KryxKW/exec" }
   ],
+  // LUKI GOOL: pronósticos de fútbol (salas por partido)
+  gool: { id: "lg", nombre: "Luki Gool", titulo: ["Luki", "Gool"], color: "#FF6B2C",
+    link: "https://jakunastoreperu-sudo.github.io/luki-gool/",
+    api: "https://script.google.com/macros/s/AKfycbysrSX5HfCSJVgQagAypzgBVC13DmLRLgICQR-LQQaampL79OM4OgGFqRSpHkHPZe0V/exec" },
   // PRODUCTOS (tienda): si está vacía, la sección no se muestra.
   // Ejemplo: { nombre: "Audífonos inalámbricos", precio: 49.90, antes: 79.90, foto: "audifonos.jpg", link: "" },
   productos: []
@@ -750,6 +764,25 @@ function azar(g) { const s = new Set(), r = new Uint32Array(1); while (s.size < 
 
 /* ---- Datos en vivo ---- */
 const VIVO = {};          // id -> { resultados, ok }
+// Luki Gool: salas abiertas y la próxima en cerrar
+const GOOL = { ok: false, salas: [] };
+const limaMsDe = t => Date.parse(String(t).replace(' ', 'T').slice(0, 19) + 'Z');   // ya está en hora de Lima
+async function cargarGool() {
+  if (!CONFIG.gool) return GOOL;
+  try { const r = await (await fetch(`${CONFIG.gool.api}?v=${Date.now()}`, { cache: 'no-store' })).json(); GOOL.ok = !!r.ok; GOOL.salas = r.salas || []; }
+  catch (e) { GOOL.ok = false; }
+  return GOOL;
+}
+function golAbiertas() { return GOOL.salas.filter(s => s.estado === 'ABIERTA' && limaMsDe(s.cierre) > ahoraL()).sort((a, b) => a.cierre.localeCompare(b.cierre)); }
+function golTick() {
+  const s = golAbiertas()[0], ms = s ? limaMsDe(s.cierre) - ahoraL() : null;
+  document.querySelectorAll('[data-golcd]').forEach(e => { e.textContent = ms == null ? '--:--' : ms > 864e5 ? Math.floor(ms / 864e5) + ' d ' + Math.floor(ms % 864e5 / HORA) + ' h' : fmt(ms); });
+}
+function golPartidoTxt() {
+  const s = golAbiertas()[0];
+  if (!s) return GOOL.ok ? 'Pronto abrimos nuevas salas' : 'Liga 1 y Champions';
+  return `${esc(s.local)} vs ${esc(s.visita)}`;
+}
 let AHORRO = { pct: 70, desde: 'S/ 0.30', paquetes: [] };
 async function cargarVivo() {
   await Promise.all(CONFIG.juegos.map(async g => {
@@ -828,7 +861,23 @@ $('juegosList').innerHTML = CONFIG.juegos.map(g => `
     </div>
     <a class="jlink" href="${g.link}">Ver resultados y consultar mi ticket</a>
   </article>`).join('');
-$('footGames').innerHTML = CONFIG.juegos.map(g => `<li><a href="${g.link}">${esc(g.nombre)}</a></li>`).join('')
+function golCardWeb() {
+  const g = CONFIG.gool, s = golAbiertas()[0];
+  return `<article class="jcard reveal in gool" style="--st:${g.color}">
+    <div class="jtop">${stickerHTML(g)}<span class="jtag">Liga 1 y Champions</span></div>
+    <p class="frase">Pronostica el partido: marcador, goleador, tarjetas, córners y más. El que más acierta se lleva el 40% del pozo.</p>
+    <div class="jvivo">
+      <div><small>${s ? 'Próxima sala cierra en' : 'Salas'}</small><span class="jcd" data-golcd>--:--</span></div>
+      <div style="text-align:right"><small>${s ? esc(s.liga) : 'Próximo partido'}</small><div class="gpart">${golPartidoTxt()}</div></div>
+    </div>
+    <div class="jstats"><div><b>S/ 10+</b><small>Pozo inicial</small></div><div><b>5 ⚽</b><small>Entrada</small></div><div><b>${golAbiertas().length || '-'}</b><small>Salas abiertas</small></div></div>
+    <div class="jctas uno"><a class="yape" href="${g.link}">Pronosticar ahora<small>con Golcitos · 1 = S/ 1</small></a></div>
+    <a class="jlink" href="${g.link}">Ver salas, ranking y consultar mi ticket</a>
+  </article>`;
+}
+function pintarGool() { if (!CONFIG.gool) return; const v = $('golWeb'); if (v) v.outerHTML = golCardWeb().replace('<article ', '<article id="golWeb" '); else $('juegosList').insertAdjacentHTML('beforeend', golCardWeb().replace('<article ', '<article id="golWeb" ')); golTick(); }
+pintarGool();
+$('footGames').innerHTML = CONFIG.juegos.map(g => `<li><a href="${g.link}">${esc(g.nombre)}</a></li>`).join('') + (CONFIG.gool ? `<li><a href="${CONFIG.gool.link}">Luki Gool</a></li>` : '')
   + `<li><a href="${CONFIG.paginaCuenta}">Mi cuenta y Lukitas</a></li><li><a href="${CONFIG.paginaApp}">App Jakuna</a></li><li><a href="#tienda">Tienda (muy pronto)</a></li>`;
 
 /* Cuentas regresivas y "jugar ahora" al juego que cierra primero */
@@ -846,6 +895,7 @@ function tick() {
   $('heroCta').firstChild.textContent = `Jugar ${u.g.nombre}`;
   $('heroCtaSub').textContent = `Cierra en ${fmt(u.ms)} · S/ 1 o 1 Lukita`;
   $('navJugar').href = linkJuego(u.g);
+  golTick();
 }
 
 /* Resultados en vivo */
@@ -932,8 +982,9 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   setTimeout(() => luki('hero', 'saluda'), 500);
   cargarAhorro().then(pintarAhorro);
   cargarSesion().then(pintarSesion);
+  cargarGool().then(pintarGool);
   await cargarVivo(); pintarVivo();
-  setInterval(async () => { await cargarVivo(); pintarVivo(); }, 60000);
+  setInterval(async () => { await cargarVivo(); pintarVivo(); cargarGool().then(pintarGool); }, 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') cargarSesion().then(pintarSesion); });
 })();
 
