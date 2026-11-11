@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0E2A47">
+<title>Jakuna Perú · Con una luca juegas por S/ 100</title>
+<meta name="description" content="Luca Express y A una Luca: elige tus números, juega con Yape o con Lukitas y mira los resultados al instante. +18.">
+<meta property="og:title" content="Jakuna Perú · Con una luca juegas por S/ 100"><meta property="og:description" content="Luca Express y A una Luca: elige tus números, juega con Yape o con Lukitas y mira los resultados al instante. +18.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Rubik:wght@800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== Jakuna · Mi cuenta =====
+   Tinta   #0E2A47   Verde  #12A877 / #0C8A61
+   Menta   #EEF4F2   Dorado #F2B63D (solo Luki y Lukitas)
+   Poppins (marca, cifras, botones) + Inter (texto), como jakuna-web */
+:root{
+  --tinta:#0E2A47; --tinta-2:#3C5266; --gris:#6B7C8A; --linea:#DDE7E3;
+  --verde:#12A877; --verde-2:#0C8A61; --menta:#EEF4F2; --menta-2:#E2F2EB;
+  --oro:#F2B63D; --oro-2:#D9951A; --blanco:#fff; --rojo:#D2493F;
+  --r-xl:28px; --r-l:20px; --r-m:14px;
+  --display:Poppins,system-ui,sans-serif; --texto:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--texto);background:var(--menta);color:var(--tinta);min-height:100vh;display:flex;justify-content:center;padding:18px 14px 40px;-webkit-font-smoothing:antialiased}
+.app{width:100%;max-width:440px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid rgba(18,168,119,.45);outline-offset:2px}
+
+/* Barra superior */
+.top{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 14px}
+.marca{font-family:var(--display);font-weight:800;font-size:1.75rem;letter-spacing:-.03em;line-height:1;color:var(--tinta);text-decoration:none}
+.marca b{color:var(--verde);font-weight:800}
+.chip-user{display:none;align-items:center;gap:8px;background:var(--blanco);border-radius:999px;padding:5px 6px 5px 12px;font-size:.82rem;font-weight:600;box-shadow:0 1px 2px rgba(14,42,71,.06)}
+.chip-user button{border:0;background:var(--menta);border-radius:999px;padding:5px 11px;font-size:.76rem;cursor:pointer;color:var(--tinta-2)}
+
+/* Tarjeta principal */
+.card{background:var(--blanco);border-radius:var(--r-xl);padding:24px 20px;box-shadow:0 18px 40px -24px rgba(14,42,71,.35)}
+.screen{display:none}
+.screen.on{display:block;animation:entra .28s ease}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== Luki ===== */
+.stage{display:flex;align-items:flex-end;gap:12px;margin-bottom:18px}
+.stage.centro{flex-direction:column;align-items:center;text-align:center}
+.luki{width:118px;height:126px;flex-shrink:0;overflow:visible}
+.luki.sm{width:84px;height:90px}
+.bocadillo{position:relative;background:var(--menta);border-radius:18px;padding:11px 14px;font-size:.9rem;line-height:1.4;color:var(--tinta);max-width:270px}
+.stage:not(.centro) .bocadillo{margin-bottom:22px}
+.stage:not(.centro) .bocadillo::before{content:'';position:absolute;left:-7px;bottom:14px;border:8px solid transparent;border-right-color:var(--menta);border-left:0}
+.stage.centro .bocadillo::before{content:'';position:absolute;left:50%;top:-7px;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:var(--menta);border-top:0}
+.stage.centro .bocadillo{margin-top:6px}
+
+.luki .cuerpo{animation:flota 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.luki .sombra{animation:sombra 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.luki .ojos{animation:parpadea 4.6s infinite;transform-box:fill-box;transform-origin:center}
+.luki .oreja-i{transform-box:fill-box;transform-origin:55% 96%;animation:orejaI 3s ease-in-out infinite;transition:transform .35s}
+.luki .oreja-d{transform-box:fill-box;transform-origin:15% 98%;animation:orejaD 2.6s ease-in-out infinite;transition:transform .35s}
+.luki .nariz{transform-box:fill-box;transform-origin:center;animation:nariz 2s infinite}
+.luki .bolilla{transform-box:fill-box;transform-origin:center;animation:bolilla 4.2s ease-in-out infinite}
+.luki .brazo-d{transform-box:fill-box;transform-origin:30% 60%}
+.luki .boca-triste,.luki .puntos,.luki .chispas{opacity:0}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes sombra{0%,100%{transform:scaleX(1);opacity:.18}50%{transform:scaleX(.85);opacity:.1}}
+@keyframes parpadea{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes orejaI{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
+@keyframes orejaD{0%,30%,100%{transform:rotate(0)}15%{transform:rotate(9deg)}}
+@keyframes nariz{0%,20%,100%{transform:translateY(0)}10%{transform:translateY(-1.5px)}}
+/* la bolilla salta y da una voltereta */
+@keyframes bolilla{0%,70%,100%{transform:translateY(0) scaleX(1)}76%{transform:translateY(-10px) scaleX(.12)}82%{transform:translateY(-15px) scaleX(1)}88%{transform:translateY(-7px) scaleX(.12)}94%{transform:translateY(0) scaleX(1)}97%{transform:translateY(0) scaleY(.88)}}
+/* saluda */
+.luki.saluda .brazo-d{animation:saluda .8s ease-in-out 3}
+.luki.saluda .oreja-d{animation:orejaD .9s ease-in-out 3}
+@keyframes saluda{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(36px,-70px) rotate(-25deg)}65%{transform:translate(36px,-70px) rotate(20deg)}}
+/* piensa */
+.luki.piensa .oreja-d{animation:none;transform:rotate(24deg)}
+.luki.piensa .pupilas{animation:mira 1.4s ease-in-out infinite}
+.luki.piensa .puntos{opacity:1}
+.luki.piensa .puntos circle{animation:punto 1.2s infinite}
+.luki.piensa .puntos circle:nth-child(2){animation-delay:.2s}.luki.piensa .puntos circle:nth-child(3){animation-delay:.4s}
+.luki.piensa .bolilla{animation:none}
+@keyframes mira{0%,100%{transform:translate(0,0)}50%{transform:translate(7px,-5px)}}
+@keyframes punto{0%,100%{opacity:.2}50%{opacity:1}}
+/* fiesta: salta y lanza la bolilla bien alto */
+.luki.fiesta .cuerpo{animation:salta .6s cubic-bezier(.3,1.6,.5,1) 3}
+.luki.fiesta .bolilla{animation:lanza 1s ease-in-out 2}
+.luki.fiesta .chispas{opacity:1;animation:chispas .9s ease-out 2}
+.luki.fiesta .oreja-i{animation:none;transform:rotate(-10deg)}.luki.fiesta .oreja-d{animation:none;transform:rotate(14deg)}
+@keyframes salta{0%,100%{transform:translateY(0)}45%{transform:translateY(-30px)}}
+@keyframes lanza{0%,100%{transform:translateY(0) scaleX(1)}20%{transform:translateY(-110px) scaleX(-1)}40%{transform:translateY(-150px) scaleX(1)}60%{transform:translateY(-110px) scaleX(-1)}85%{transform:translateY(0) scaleX(1)}}
+@keyframes chispas{from{transform:scale(.6);opacity:1}to{transform:scale(1.2);opacity:0}}
+.luki .chispas{transform-box:fill-box;transform-origin:center}
+/* triste: orejas caídas */
+.luki.triste .boca-feliz{opacity:0}.luki.triste .boca-triste{opacity:1}
+.luki.triste .oreja-i{animation:none;transform:rotate(-38deg)}.luki.triste .oreja-d{animation:none;transform:rotate(48deg)}
+.luki.triste .cuerpo{animation:none;transform:translateY(6px)}
+.luki.triste .bolilla{animation:none;transform:translateY(10px)}
+@media (prefers-reduced-motion:reduce){.luki *,.screen.on{animation:none!important}}
+
+/* Tabs */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--menta);border-radius:999px;padding:4px;margin-bottom:20px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:10px;font-family:var(--display);font-weight:600;font-size:1rem;color:var(--gris);cursor:pointer;transition:background .2s,color .2s}
+.seg button.on{background:var(--blanco);color:var(--tinta);box-shadow:0 2px 8px -2px rgba(14,42,71,.18)}
+
+/* Formularios */
+.campo{margin-bottom:14px}
+.campo label{display:block;font-size:.82rem;font-weight:600;margin:0 0 6px 4px;color:var(--tinta-2)}
+.campo input,.campo select{width:100%;height:50px;padding:0 16px;background:#F5F8F7;border:1.5px solid transparent;border-radius:var(--r-m);font-size:.95rem;transition:border-color .15s,background .15s}
+.campo input:focus,.campo select:focus{outline:none;border-color:var(--verde);background:var(--blanco)}
+.campo input::placeholder{color:#9DABB5}
+.ayuda{font-size:.76rem;color:var(--gris);margin:6px 0 0 4px;line-height:1.4}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tel{display:grid;grid-template-columns:1fr 1.5fr;gap:8px}
+.pass{position:relative}
+.pass input{padding-right:70px}
+.ojo{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--verde-2);font-weight:600;font-size:.8rem;cursor:pointer;padding:8px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.84rem;line-height:1.4;margin:6px 4px 18px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--verde);flex-shrink:0;margin-top:1px}
+.enlaces{display:flex;justify-content:space-between;gap:8px;margin:-2px 4px 18px;flex-wrap:wrap}
+.link{border:0;background:none;color:var(--verde-2);font-weight:600;font-size:.84rem;cursor:pointer;padding:2px 0}
+
+/* Botones */
+.btn{width:100%;height:54px;border:0;border-radius:999px;background:var(--verde);color:#fff;font-family:var(--display);font-weight:600;font-size:1rem;cursor:pointer;transition:transform .12s,background .2s,opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:var(--verde-2)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{background:#B9C6CE;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--tinta);box-shadow:inset 0 0 0 1.5px var(--linea);margin-top:10px}
+.btn.sec:hover{box-shadow:inset 0 0 0 1.5px var(--tinta-2)}
+.btn s{opacity:.7;font-weight:500;font-size:.92rem}
+
+/* Mensajes */
+.msg{display:none;font-size:.86rem;border-radius:var(--r-m);padding:11px 14px;margin-bottom:14px;line-height:1.45}
+.msg.err{display:block;background:#FCEDEB;color:#9B2E26}
+.msg.ok{display:block;background:var(--menta-2);color:var(--verde-2)}
+.nota{background:#FFF7E3;border-radius:var(--r-m);padding:13px 15px;font-size:.86rem;line-height:1.5;margin-bottom:16px;color:#5A4300}
+
+/* Billetera */
+.billetera{display:flex;align-items:center;gap:6px;background:linear-gradient(160deg,#0E2A47,#16406A);color:#fff;border-radius:var(--r-l);padding:14px 18px 14px 8px;margin-bottom:22px;position:relative;overflow:hidden}
+.billetera .luki{width:96px;height:102px}
+.saldo{font-family:var(--display);font-weight:700;font-size:2.7rem;line-height:.9;letter-spacing:-.02em}
+.saldo-lbl{font-size:.84rem;color:#A9BCCD;margin-top:4px}
+.saldo-lbl b{color:var(--oro);font-weight:600}
+.billetera .bocadillo{position:absolute;right:12px;top:12px;background:rgba(255,255,255,.12);color:#fff;font-size:.78rem;padding:6px 11px;border-radius:12px;max-width:180px}
+.billetera .bocadillo::before{display:none}
+
+/* Paquetes */
+h2{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 12px 2px;line-height:1.2}
+.paquetes{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin:4px 0 12px}
+.paq{position:relative;border:0;background:#F5F8F7;border-radius:var(--r-l);padding:16px 10px 14px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}
+.paq:hover{transform:translateY(-2px)}
+.paq.on{background:var(--blanco);box-shadow:0 0 0 2.5px var(--verde),0 10px 22px -12px rgba(18,168,119,.6)}
+.paq .n{font-family:var(--display);font-weight:700;font-size:1.8rem;line-height:1;color:var(--tinta)}
+.paq .u{font-size:.74rem;color:var(--gris);margin-bottom:8px}
+.paq .nom{font-family:var(--display);font-weight:600;font-size:.92rem;line-height:1.1;min-height:2.2em;display:flex;align-items:center;justify-content:center}
+.paq .precio{display:inline-block;margin-top:8px;background:var(--tinta);color:#fff;border-radius:999px;padding:3px 12px;font-family:var(--display);font-weight:700;font-size:1rem}
+.paq.on .precio{background:var(--verde)}
+.off{position:absolute;top:-7px;right:8px;background:var(--oro);color:#4A3200;border-radius:999px;padding:1px 8px;font-size:.72rem;font-weight:700}
+
+.extra{background:#F5F8F7;border-radius:var(--r-l);margin-bottom:10px;overflow:hidden}
+.extra>button{width:100%;border:0;background:transparent;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;cursor:pointer;font-family:var(--display);font-weight:600;font-size:1rem;color:var(--tinta)}
+.extra>button span{color:var(--verde-2);font-size:1.3rem;line-height:1;transition:transform .2s}
+.extra.on>button span{transform:rotate(45deg)}
+.extra .dentro{display:none;padding:0 16px 16px}
+.extra.on .dentro{display:block}
+.fila{display:flex;gap:8px}
+.fila input{flex:1;min-width:0;height:48px;border:1.5px solid transparent;background:var(--blanco);border-radius:var(--r-m);padding:0 14px;font-size:1rem}
+.fila input:focus{outline:none;border-color:var(--verde)}
+.fila button{border:0;border-radius:var(--r-m);background:var(--tinta);color:#fff;padding:0 16px;font-weight:600;cursor:pointer;white-space:nowrap}
+.cotiza{font-size:.88rem;margin-top:10px;line-height:1.4;color:var(--tinta-2)}
+.cotiza b{font-family:var(--display);font-size:1.05rem;color:var(--tinta)}
+.cupon-ok{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--menta-2);color:var(--verde-2);border-radius:var(--r-m);padding:10px 12px;margin-top:10px;font-size:.88rem;font-weight:600}
+.cupon-ok button{border:0;background:transparent;color:var(--verde-2);font-size:1.1rem;cursor:pointer;padding:0 4px}
+
+/* Listas */
+.lista{display:grid;gap:8px;margin-bottom:8px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#F5F8F7;border-radius:var(--r-m);padding:12px 14px;font-size:.86rem}
+.item.toca{cursor:pointer}
+.item .cod{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.02em}
+.item .sub{font-size:.78rem;color:var(--gris);margin-top:1px}
+.estado{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;white-space:nowrap}
+.estado::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor}
+.e-pend{color:#C08410}.e-ok{color:var(--verde-2)}.e-no{color:var(--rojo)}.e-off{color:#8A99A5}
+.mas{color:var(--verde-2)}.menos{color:var(--rojo)}
+.num{font-family:var(--display);font-weight:700;font-size:1.05rem}
+.vacio{text-align:center;color:var(--gris);font-size:.88rem;padding:14px 0}
+.bloque{margin-top:24px}
+.bloque-top{display:flex;justify-content:space-between;align-items:baseline}
+details.mini{margin-top:14px;background:#F5F8F7;border-radius:var(--r-l);padding:0 16px}
+details.mini summary{cursor:pointer;list-style:none;padding:14px 0;font-family:var(--display);font-weight:600;font-size:1rem;display:flex;justify-content:space-between}
+details.mini summary::after{content:'+';color:var(--verde-2);font-size:1.3rem;line-height:1}
+details.mini[open] summary::after{content:'–'}
+details.mini summary::-webkit-details-marker{display:none}
+details.mini .cont{padding-bottom:14px}
+details.mini .item{background:var(--blanco)}
+.datos{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.86rem;padding-bottom:14px}
+.datos dt{color:var(--gris)}
+
+/* Orden de pago */
+.orden{background:var(--menta);border-radius:var(--r-l);padding:20px;text-align:center;margin-bottom:14px}
+.orden .codigo{font-family:var(--display);font-weight:700;font-size:1.7rem;letter-spacing:.04em;line-height:1.1}
+.orden .det{font-size:.88rem;color:var(--tinta-2);margin-top:2px}
+.pago{text-align:center;padding:4px 0 6px}
+.pago .monto{font-family:var(--display);font-weight:700;font-size:2.3rem;line-height:1}
+.pago .yape{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:.04em;margin:4px 0}
+.pago p{font-size:.86rem;color:var(--tinta-2);line-height:1.5}
+.copiar{display:flex;gap:8px;justify-content:center;margin:12px 0 4px}
+.copiar button{border:0;border-radius:999px;background:var(--tinta);color:#fff;padding:9px 16px;font-size:.84rem;font-weight:600;cursor:pointer}
+.copiar button+button{background:var(--menta);color:var(--tinta)}
+.plazo{font-size:.82rem;color:var(--gris);text-align:center;margin:10px 0 16px}
+a.btn{text-decoration:none}
+
+/* Modal */
+.velo{position:fixed;inset:0;background:rgba(14,42,71,.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:9}
+.velo.on{display:flex}
+.modal{background:var(--blanco);border-radius:var(--r-xl);padding:22px 20px;max-width:380px;width:100%;text-align:center}
+.modal h3{font-family:var(--display);font-size:1.35rem;margin:4px 0 6px}
+.modal p{font-size:.9rem;color:var(--tinta-2);line-height:1.5;margin-bottom:16px}
+.modal .luki{margin:0 auto}
+@media (max-width:380px){.dos{grid-template-columns:1fr}.saldo{font-size:2.6rem}}
+
+/* ================= WEB JAKUNA ================= */
+body{display:block;padding:0;background:var(--menta)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+section{padding:72px 0}
+.topbar{background:var(--tinta);color:#A9BCCD;text-align:center;font-size:.8rem;padding:7px 12px}
+.topbar b{color:#fff}
+header{position:sticky;top:0;z-index:20;background:rgba(238,244,242,.88);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px)}
+.nav{display:flex;align-items:center;gap:18px;height:68px}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.kicon{width:36px;height:36px;border-radius:11px;background:var(--tinta);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Rubik',var(--display);font-weight:900;font-size:1.15rem;transform:rotate(-8deg)}
+.logo .marca{font-size:1.6rem}
+nav ul{display:flex;gap:4px;list-style:none;margin-left:auto}
+nav ul a{display:block;padding:8px 12px;border-radius:999px;text-decoration:none;color:var(--tinta-2);font-weight:500;font-size:.92rem}
+nav ul a:hover{background:var(--blanco);color:var(--tinta)}
+.nav-der{display:flex;align-items:center;gap:8px}
+.cta-sm{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 18px;border-radius:999px;background:var(--verde);color:#fff;font-family:var(--display);font-weight:600;font-size:.92rem;text-decoration:none;white-space:nowrap}
+.cta-sm:hover{background:var(--verde-2)}
+.cuenta-chip{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 14px;border-radius:999px;background:var(--blanco);color:var(--tinta);font-weight:600;font-size:.88rem;text-decoration:none;box-shadow:0 1px 2px rgba(14,42,71,.08)}
+.cuenta-chip b{font-family:var(--display)}
+.menu-btn{display:none;border:0;background:var(--blanco);width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+
+/* Hero */
+.hero{background:radial-gradient(110% 120% at 85% 10%,#1E4B7A 0%,#0E2A47 55%,#0B2139 100%);color:#fff;padding:64px 0 76px;overflow:hidden;position:relative}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}
+.pila{display:flex;flex-direction:column;align-items:flex-start;gap:0;transform:rotate(-6deg);transform-origin:left;margin:10px 0 30px}
+.pila span{display:inline-block;font-family:'Rubik',var(--display);font-weight:900;text-transform:uppercase;line-height:.92;border-radius:12px;padding:10px 18px 8px;font-size:clamp(2rem,5.4vw,3.9rem);box-shadow:0 14px 30px -16px rgba(0,0,0,.7);animation:cae-st .6s cubic-bezier(.3,1.5,.5,1) both}
+.pila .b1{background:#B44FFF;color:#fff}
+.pila .b2{background:#fff;color:var(--tinta);margin:-6px 0 0 34px;animation-delay:.12s}
+.pila .b3{background:var(--verde);color:#fff;margin:-6px 0 0 8px;animation-delay:.24s}
+@keyframes cae-st{from{opacity:0;transform:translateY(-22px) scale(.9)}to{opacity:1;transform:none}}
+.hero .lead{font-size:1.12rem;line-height:1.6;color:#C9D7E3;max-width:470px}
+.hero .lead b{color:#fff}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.cta{display:inline-flex;flex-direction:column;justify-content:center;gap:1px;min-height:58px;padding:8px 26px;border-radius:999px;background:var(--verde);color:#fff;font-family:var(--display);font-weight:700;font-size:1.08rem;text-decoration:none;border:0;cursor:pointer;box-shadow:0 14px 30px -14px rgba(18,168,119,.9);transition:transform .15s,background .2s}
+.cta small{font-family:var(--texto);font-weight:500;font-size:.78rem;opacity:.9}
+.cta:hover{background:var(--verde-2);transform:translateY(-2px)}
+.cta.ghost{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+.cta.ghost:hover{background:rgba(255,255,255,.18)}
+.nota-18{font-size:.8rem;color:#8EA3B7;margin-top:22px}
+.hero-art{position:relative;display:flex;justify-content:center;min-height:400px}
+.hero-art .luki{width:min(360px,80vw);height:auto;aspect-ratio:300/320}
+.hero-art .bocadillo{position:absolute;top:0;left:0;background:#fff;color:var(--tinta);font-family:var(--display);font-weight:600;font-size:1rem;transform:rotate(-4deg);max-width:270px;padding:13px 17px;border-radius:18px;box-shadow:0 16px 30px -18px rgba(0,0,0,.6)}
+.hero-art .bocadillo::before{content:'';position:absolute;right:46px;bottom:-9px;border:10px solid transparent;border-top-color:#fff;border-bottom:0}
+.fchip{position:absolute;background:rgba(23,63,102,.92);border:1px solid rgba(79,214,166,.35);color:#C9D7E3;border-radius:16px;padding:10px 14px;font-size:.8rem;backdrop-filter:blur(6px)}
+.fchip b{display:block;font-family:var(--display);font-size:1.5rem;color:#4FD6A6;line-height:1.1;font-variant-numeric:tabular-nums}
+.fchip.c1{right:0;top:40%;transform:rotate(3deg)}
+.fchip.c2{left:0;bottom:8%;transform:rotate(-3deg)}
+.fchip .bolas{justify-content:flex-start;margin-top:4px}
+.fchip .bola{width:28px;height:28px;font-size:.8rem}
+
+.ticker{background:#B44FFF;color:#fff;overflow:hidden;white-space:nowrap;padding:12px 0;font-family:'Rubik',var(--display);font-weight:800;text-transform:uppercase;font-size:.92rem;letter-spacing:.02em}
+.ticker>div{display:inline-flex;gap:26px;animation:marq 28s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* Encabezados de sección */
+.sec-head{max-width:640px;margin-bottom:34px}
+.sec-head.centro{margin-left:auto;margin-right:auto;text-align:center}
+.sec-head h2{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,3.6vw,2.6rem);line-height:1.12;letter-spacing:-.02em;margin:0 0 10px}
+.sec-head p{font-size:1.05rem;color:var(--tinta-2);line-height:1.6}
+.tag-sec{display:inline-block;font-family:'Rubik',var(--display);font-weight:800;font-size:.85rem;text-transform:uppercase;background:var(--tinta);color:#fff;border-radius:8px;padding:5px 11px;transform:rotate(-3deg);margin-bottom:14px}
+
+/* Juegos */
+.juegos{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.jcard{background:var(--blanco);border-radius:var(--r-xl);padding:26px;display:flex;flex-direction:column;gap:16px;box-shadow:0 22px 44px -30px rgba(14,42,71,.45);position:relative;overflow:hidden}
+.jcard::after{content:'';position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:var(--st);opacity:.1}
+.jcard .jtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.jcard .sticker{margin:0;transform:rotate(-6deg)}
+.jcard .sticker .s2{font-size:2.2rem}
+.jtag{background:var(--menta);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:600;color:var(--tinta-2);white-space:nowrap}
+.jcard .frase{color:var(--tinta-2);line-height:1.55}
+.jvivo{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:#F5F8F7;border-radius:var(--r-l);padding:14px 16px}
+.jvivo small{display:block;font-size:.78rem;color:var(--gris)}
+.jvivo b{font-family:var(--display);font-size:1.05rem}
+.jcd{font-family:var(--display);font-weight:700;font-size:1.7rem;font-variant-numeric:tabular-nums;color:var(--tinta)}
+.jcd.cerrando{color:var(--rojo)}
+.jstats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;gap:8px}
+.jstats div{background:var(--menta);border-radius:var(--r-m);padding:10px 4px}
+.jstats b{display:block;font-family:var(--display);font-size:1.1rem}
+.jstats small{font-size:.74rem;color:var(--gris)}
+.jctas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+.jctas a{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:56px;border-radius:18px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:.98rem;text-align:center;line-height:1.15;padding:6px}
+.jctas a small{font-family:var(--texto);font-weight:500;font-size:.74rem;opacity:.85}
+.jctas .yape{background:var(--tinta);color:#fff}
+.jctas .luk{background:var(--oro);color:#4A3200;position:relative}
+.jctas a:hover{transform:translateY(-2px)}
+.jlink{font-size:.84rem;color:var(--verde-2);font-weight:600;text-decoration:none;text-align:center}
+
+/* Lukitas */
+.lukitas{background:var(--blanco)}
+.lk-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center}
+.lk-lista{list-style:none;display:grid;gap:12px;margin:22px 0 26px}
+.lk-lista li{display:flex;gap:12px;align-items:flex-start;font-size:1rem;line-height:1.45}
+.lk-lista li i{font-style:normal;width:32px;height:32px;border-radius:50%;background:var(--menta-2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lk-paq{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.lk-p{position:relative;background:#F5F8F7;border-radius:var(--r-l);padding:22px 14px 18px;text-align:center}
+.lk-p .n{font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1}
+.lk-p .u{font-size:.8rem;color:var(--gris)}
+.lk-p .nom{font-family:var(--display);font-weight:600;margin-top:8px}
+.lk-p .precio{display:inline-block;margin-top:10px;background:var(--tinta);color:#fff;border-radius:999px;padding:4px 14px;font-family:var(--display);font-weight:700}
+.lk-p .por{display:block;font-size:.76rem;color:var(--verde-2);margin-top:6px;font-weight:600}
+.lk-p.mejor{background:linear-gradient(160deg,#0E2A47,#16406A);color:#fff}
+.lk-p.mejor .u{color:#A9BCCD}.lk-p.mejor .precio{background:var(--oro);color:#4A3200}.lk-p.mejor .por{color:#4FD6A6}
+.cta.dark{background:var(--tinta);box-shadow:0 14px 30px -14px rgba(14,42,71,.8)}
+.cta.dark:hover{background:#16406A}
+
+/* Cómo funciona */
+.modos2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.modo-col{background:var(--blanco);border-radius:var(--r-xl);padding:26px}
+.modo-col h3{font-family:var(--display);font-size:1.3rem;margin-bottom:4px}
+.modo-col>p{color:var(--gris);font-size:.92rem;margin-bottom:16px}
+.paso{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--linea)}
+.paso:first-of-type{border-top:0}
+.paso .n{width:34px;height:34px;border-radius:50%;background:var(--tinta);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;flex-shrink:0}
+.modo-col.luk .paso .n{background:var(--oro);color:#4A3200}
+.paso b{font-family:var(--display);display:block;font-size:1rem}
+.paso span{font-size:.9rem;color:var(--tinta-2);line-height:1.5}
+
+/* Máquina de Luki */
+.maquina{background:linear-gradient(160deg,#0E2A47,#173F66);color:#fff;border-radius:var(--r-xl);padding:30px;display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+.maquina .luki{width:200px;height:214px}
+.mq-modos{display:inline-flex;background:rgba(255,255,255,.08);border-radius:999px;padding:4px;margin-bottom:18px}
+.mq-modos button{border:0;background:transparent;color:#A9BCCD;border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:600;cursor:pointer}
+.mq-modos button.on{background:#fff;color:var(--tinta)}
+.rodillo{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.rodillo .bola{width:62px;height:62px;font-size:1.5rem}
+.rodillo .bola.gira{animation:gira .12s linear infinite}
+@keyframes gira{50%{transform:translateY(-4px) rotate(8deg)}}
+.mq-btns{display:flex;flex-wrap:wrap;gap:10px}
+.mq-btns button,.mq-btns a{height:50px;padding:0 20px;border-radius:999px;border:0;font-family:var(--display);font-weight:600;font-size:.98rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.mq-tirar{background:#fff;color:var(--tinta)}
+.mq-jugar{background:var(--verde);color:#fff}
+.mq-nota{font-size:.82rem;color:#8EA3B7;margin-top:14px}
+
+/* Luki */
+.meet{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center}
+.meet-art{display:flex;justify-content:center}
+.meet-art .luki{width:min(320px,70vw);height:auto;aspect-ratio:300/320}
+.rasgos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+.rasgo{background:var(--blanco);border-radius:var(--r-l);padding:14px 16px}
+.rasgo b{font-family:var(--display);display:block;margin-bottom:2px}
+.rasgo span{font-size:.88rem;color:var(--tinta-2)}
+.cita{font-family:var(--display);font-weight:600;font-size:1.25rem;line-height:1.4;background:var(--tinta);color:#fff;border-radius:var(--r-l);padding:20px 22px;transform:rotate(-1.5deg)}
+.cita span{color:#4FD6A6}
+
+/* Confianza / tienda / redes / faq */
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.trust div{background:var(--blanco);border-radius:var(--r-l);padding:20px}
+.trust i{font-style:normal;font-size:1.6rem}
+.trust h3{font-family:var(--display);font-size:1.05rem;margin:8px 0 4px}
+.trust p{font-size:.9rem;color:var(--tinta-2);line-height:1.5}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.scard{background:var(--blanco);border-radius:var(--r-l);padding:16px;display:flex;flex-direction:column;gap:8px}
+.pimg{aspect-ratio:1;border-radius:var(--r-m);background:#F5F8F7 center/cover}
+.scard h3{font-family:var(--display);font-size:1rem}
+.scard .price b{font-family:var(--display);font-size:1.2rem}.scard .price s{color:var(--gris);margin-left:6px}
+.store{background:var(--oro);border-radius:var(--r-xl);padding:34px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.store h2{font-family:var(--display);font-weight:800;font-size:1.8rem;color:#3A2700}
+.store p{color:#5A4300;max-width:520px;margin-top:6px}
+.social{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.soc{display:flex;gap:12px;align-items:center;background:var(--blanco);border-radius:var(--r-l);padding:16px;text-decoration:none;color:var(--tinta)}
+.soc i{font-style:normal;font-size:1.5rem}
+.soc b{font-family:var(--display);display:block}.soc span{font-size:.82rem;color:var(--gris)}
+.faq{max-width:760px;margin:0 auto;display:grid;gap:10px}
+.faq details{background:var(--blanco);border-radius:var(--r-l);padding:0 20px}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-family:var(--display);font-weight:600;font-size:1.02rem;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:'+';color:var(--verde-2);font-size:1.4rem;line-height:1}
+.faq details[open] summary::after{content:'–'}
+.faq summary::-webkit-details-marker{display:none}
+.faq p{padding:0 0 18px;color:var(--tinta-2);line-height:1.6}
+.app-banner{background:linear-gradient(120deg,#B44FFF,#7A3BEA);color:#fff;border-radius:var(--r-xl);padding:26px 30px;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap}
+.app-banner h3{font-family:'Rubik',var(--display);font-weight:900;text-transform:uppercase;font-size:1.6rem;line-height:1}
+.app-banner p{opacity:.9;margin-top:6px}
+.app-banner a{background:#fff;color:#6B2FD0;height:52px;padding:0 24px;border-radius:999px;display:inline-flex;align-items:center;font-family:var(--display);font-weight:700;text-decoration:none}
+footer{background:var(--tinta);color:#A9BCCD;padding:54px 0 30px;margin-top:40px}
+.foot{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}
+footer .marca{color:#fff}
+footer h4{font-family:var(--display);color:#fff;margin-bottom:12px}
+footer ul{list-style:none;display:grid;gap:8px}
+footer a{color:#C9D7E3;text-decoration:none;font-size:.92rem}
+footer a:hover{color:#4FD6A6}
+.legal{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.1);margin-top:34px;padding-top:18px;font-size:.82rem}
+.b18{display:inline-block;background:var(--rojo);color:#fff;border-radius:6px;padding:1px 6px;font-weight:700;margin-right:6px}
+.wa-float{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 26px -10px rgba(0,0,0,.5);z-index:30}
+.wa-float svg{width:30px;height:30px;fill:#fff}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;background:var(--tinta);color:#fff;border-radius:999px;padding:12px 20px;font-weight:600;font-size:.9rem;transition:all .3s;z-index:40;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.ticker>div,.pila span{animation:none}}
+
+@media (max-width:900px){
+  nav ul{display:none;position:absolute;top:68px;left:12px;right:12px;flex-direction:column;background:var(--blanco);border-radius:var(--r-l);padding:8px;box-shadow:0 20px 40px -20px rgba(14,42,71,.5)}
+  nav ul.open{display:flex}
+  .menu-btn{display:block}
+  .nav-der .cta-sm{display:none}
+  .hero .wrap,.juegos,.lk-grid,.modos2,.meet{grid-template-columns:1fr}
+  .hero{padding:40px 0 56px}
+  .hero-art{min-height:330px;order:-1}
+  .hero-art .luki{width:240px}
+  .trust,.social{grid-template-columns:1fr 1fr}
+  .maquina{grid-template-columns:1fr;text-align:center}
+  .maquina .luki{margin:0 auto;width:150px;height:160px}
+  .rodillo,.mq-btns{justify-content:center}
+  .foot{grid-template-columns:1fr}
+  section{padding:54px 0}
+}
+@media (max-width:520px){
+  .trust,.social,.rasgos{grid-template-columns:1fr}
+  .jcard{padding:20px}
+  .hero-ctas .cta{width:100%;align-items:center}
+  .fchip.c1{top:auto;bottom:34%}
+}
+/* Piezas compartidas con los juegos */
+.sticker{display:inline-flex;flex-direction:column;align-items:flex-start;transform:rotate(-7deg);transform-origin:left center}
+.sticker span{display:inline-block;background:var(--st,#B44FFF);color:#fff;font-family:'Rubik',var(--display);font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.01em;border-radius:7px;box-shadow:0 8px 18px -10px rgba(0,0,0,.6)}
+.sticker .s1{font-size:1rem;padding:5px 9px 4px;position:relative;z-index:1}
+.sticker .s2{font-size:2rem;padding:6px 11px 5px;margin:-4px 0 0 18px}
+.bolas{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bola{width:36px;height:36px;border-radius:50%;background:var(--tinta);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:.98rem;box-shadow:inset 0 0 0 3px #4FD6A6;flex-shrink:0}
+.coin-mini{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE59A,#F2B63D 60%,#C9850F);color:#6B4A00;display:inline-flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:.66rem}
+</style>
+</head>
+<body>
+<template id="lukiTpl">
+<!-- Luki: el mismo dibujo de jakuna-web, separado en partes para animarlo -->
+<svg class="luki" viewBox="0 -20 300 320" aria-hidden="true">
+  <ellipse class="sombra" cx="150" cy="288" rx="92" ry="9" fill="#000" opacity=".18"/>
+  <g class="cuerpo"><g class="chispas" fill="#4FD6A6">
+      <path d="M30 70C32 86 36 90 52 92C36 94 32 98 30 114C28 98 24 94 8 92C24 90 28 86 30 70Z"/>
+      <path d="M266 40C267 52 270 55 282 56C270 57 267 60 266 72C265 60 262 57 250 56C262 55 265 52 266 40Z"/>
+      <circle cx="272" cy="150" r="7"/><circle cx="26" cy="170" r="6"/></g>
+      
+      <!-- patitas -->
+      <ellipse cx="98" cy="270" rx="28" ry="14" fill="#EDE3D6"/>
+      <ellipse cx="202" cy="270" rx="28" ry="14" fill="#EDE3D6"/>
+      <g class="oreja-i">
+        <ellipse cx="112" cy="62" rx="24" ry="64" fill="#FBF7F2" stroke="#EDE3D6" stroke-width="3" transform="rotate(-14 112 62)"/>
+        <ellipse cx="113" cy="66" rx="12" ry="46" fill="#F4A7A0" transform="rotate(-14 113 66)"/>
+      </g>
+      <g class="oreja-d">
+        <path d="M178 112 C176 60 190 18 214 16 C238 14 240 40 226 62 C214 82 200 100 196 116 Z" fill="#FBF7F2" stroke="#EDE3D6" stroke-width="3"/>
+        <path d="M188 104 C188 66 198 34 214 30 C228 28 226 46 218 60 C208 76 198 92 196 104 Z" fill="#F4A7A0"/>
+      </g>
+      <!-- cuerpo -->
+      <ellipse cx="150" cy="186" rx="104" ry="88" fill="#FBF7F2"/>
+      <ellipse cx="150" cy="186" rx="104" ry="88" fill="none" stroke="#EDE3D6" stroke-width="3"/>
+      <ellipse cx="150" cy="250" rx="70" ry="32" fill="#fff"/>
+      <g class="gorra">
+      <path d="M96 118 C96 68 204 68 204 118 Z" fill="#12A877"/>
+      <path d="M196 114 C224 108 248 112 254 120 C240 126 216 126 194 122 Z" fill="#0B7A55"/>
+      <rect x="94" y="112" width="112" height="10" rx="5" fill="#0B7A55"/>
+      <g transform="rotate(-10 150 94)">
+        <rect x="134" y="78" width="32" height="32" rx="8" fill="#0E2A47"/>
+        <text x="150" y="103" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-weight="700" font-size="24" fill="#fff">K</text>
+      </g>
+      </g><g class="ojos"><g class="pupilas">
+      <ellipse cx="118" cy="160" rx="13" ry="15" fill="#0E2A47"/>
+      <ellipse cx="182" cy="160" rx="13" ry="15" fill="#0E2A47"/>
+      <circle cx="123" cy="154" r="5" fill="#fff"/><circle cx="187" cy="154" r="5" fill="#fff"/>
+      <circle cx="114" cy="166" r="2.2" fill="#fff"/><circle cx="178" cy="166" r="2.2" fill="#fff"/>
+      </g></g><g class="mejillas">
+      <ellipse cx="96" cy="188" rx="15" ry="9" fill="#F4A7A0" opacity=".75"/>
+      <ellipse cx="204" cy="188" rx="15" ry="9" fill="#F4A7A0" opacity=".75"/>
+      </g><g class="nariz">
+        <path d="M142 177 Q150 172 158 177 Q154 185 150 186 Q146 185 142 177 Z" fill="#E07A80"/>
+      </g>
+      <g class="boca-feliz">
+      <path d="M150 186 v5 M150 191 c-4 6 -12 6 -14 0 M150 191 c4 6 12 6 14 0" stroke="#0E2A47" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <rect x="143" y="194" width="7" height="9" rx="2" fill="#fff" stroke="#DCE3E8" stroke-width="1.5"/>
+      <rect x="150" y="194" width="7" height="9" rx="2" fill="#fff" stroke="#DCE3E8" stroke-width="1.5"/>
+      </g><path class="boca-triste" d="M150 186 v4 M136 200 q14 -12 28 0" stroke="#0E2A47" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <g stroke="#0E2A47" stroke-width="2" stroke-linecap="round" opacity=".45">
+        <path d="M122 184 L86 178"/><path d="M122 190 L86 194"/>
+        <path d="M178 184 L214 178"/><path d="M178 190 L214 194"/>
+      </g>
+      <g class="bolilla">
+      <circle cx="150" cy="242" r="32" fill="#0E2A47" stroke="#4FD6A6" stroke-width="6"/>
+      <circle cx="140" cy="230" r="6" fill="#fff" opacity=".25"/>
+      <text x="150" y="254" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-weight="700" font-size="32" fill="#fff">7</text>
+      </g>
+      <ellipse cx="116" cy="238" rx="15" ry="12" fill="#FBF7F2" stroke="#EDE3D6" stroke-width="2"/>
+      <g class="brazo-d"><ellipse cx="184" cy="238" rx="15" ry="12" fill="#FBF7F2" stroke="#EDE3D6" stroke-width="2"/></g>
+    <g class="puntos" fill="#0E2A47"><circle cx="244" cy="96" r="8"/><circle cx="266" cy="76" r="8"/><circle cx="288" cy="56" r="8"/></g></g>
+</svg>
+</template>
+<div class="topbar"><b>+18</b> · Juega con responsabilidad · Sorteos automáticos y resultados al instante</div>
+<header>
+  <div class="wrap nav">
+    <a href="#inicio" class="logo" aria-label="Jakuna Perú"><span class="kicon">K</span><span class="marca">ja<b>k</b>una</span></a>
+    <nav><ul id="menu">
+      <li><a href="#juegos">Juegos</a></li><li><a href="#lukitas">Lukitas</a></li><li><a href="#como">Cómo funciona</a></li>
+      <li><a href="#luki">Luki</a></li><li><a href="#faq">Preguntas</a></li>
+    </ul></nav>
+    <div class="nav-der">
+      <a class="cuenta-chip" id="cuentaChip" href="#">Ingresar</a>
+      <a class="cta-sm" id="navJugar" href="#juegos">Jugar ahora</a>
+      <button class="menu-btn" aria-label="Abrir menú" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <div>
+      <div class="pila" aria-label="Tú eliges. Tus números. Tu jugada."><span class="b1">¡Tú eliges!</span><span class="b2">Tus números</span><span class="b3">Tu jugada 🍀</span></div>
+      <p class="lead" id="heroLead">Aquí nadie elige por ti: <b>tú eliges tu suerte</b>. Con una luca juegas por <b>S/ 100</b>.</p>
+      <div class="hero-ctas">
+        <a class="cta" id="heroCta" href="#juegos">Jugar ahora<small id="heroCtaSub">Sorteos cada hora</small></a>
+        <a class="cta ghost" href="#prueba">🎲 Que Luki elija por mí<small>Jugada en 1 toque</small></a>
+      </div>
+      <p class="nota-18">+18 · Juega con responsabilidad · Es un juego, no una forma de ganar plata</p>
+    </div>
+    <div class="hero-art">
+      <div class="bocadillo" id="heroBub">¡Habla causa! Yo soy Luki. ¿Cuáles son tus números? 👀</div>
+      <span data-luki="hero"></span>
+      <div class="fchip c1"><span id="c1t">Próximo sorteo</span><b id="heroCd">--:--</b></div>
+      <div class="fchip c2"><span id="c2t">Último sorteo</span><div class="bolas" id="c2b"></div></div>
+    </div>
+  </div>
+</section>
+<div class="ticker" aria-hidden="true"><div id="tick"></div></div>
+
+<section id="juegos">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="tag-sec">Elige tu juego</span><h2>Una luca, dos formas de ganar S/ 100</h2><p>¿Prefieres la emoción de cada hora o esperar la noche? Tú decides. Paga con Yape o con tus Lukitas.</p></div>
+    <div class="juegos" id="juegosList"></div>
+  </div>
+</section>
+
+<section class="lukitas" id="lukitas">
+  <div class="wrap lk-grid">
+    <div class="reveal">
+      <span class="tag-sec" style="background:var(--oro);color:#4A3200">Nuevo · Lukitas</span>
+      <div class="sec-head" style="margin-bottom:0"><h2 id="lkTitulo">Juega más, paga menos</h2>
+      <p id="lkLead">Crea tu cuenta Jakuna gratis, recarga Lukitas y cada jugada te sale más barata. Sin yapear cada vez.</p></div>
+      <ul class="lk-lista">
+        <li><i>⚡</i><span><b>Juegas al toque:</b> eliges tus números y listo, se descuenta 1 Lukita.</span></li>
+        <li><i>💸</i><span id="lkAhorro"><b>Ahorras hasta 70%</b> frente a pagar cada jugada con Yape.</span></li>
+        <li><i>🎟️</i><span><b>Un solo saldo</b> para Luca Express y A una Luca.</span></li>
+        <li><i>🎁</i><span><b>Cupones y regalos:</b> si te invitó alguien, pon su código de referido.</span></li>
+      </ul>
+      <a class="cta dark" id="lkCta" href="#">Crear mi cuenta gratis<small>Toma un minuto</small></a>
+    </div>
+    <div class="lk-paq reveal" id="lkPaq"></div>
+  </div>
+</section>
+
+<section id="como">
+  <div class="wrap">
+    <div class="sec-head centro reveal"><span class="tag-sec">Al toque</span><h2>Así de simple juegas</h2><p>Dos formas, tú eliges la que te acomode.</p></div>
+    <div class="modos2">
+      <div class="modo-col reveal"><h3>📲 Con Yape</h3><p>Sin cuenta. S/ 1 por jugada.</p>
+        <div class="paso"><span class="n">1</span><div><b>Elige tus números</b><span>Márcalos tú o toca "Al azar".</span></div></div>
+        <div class="paso"><span class="n">2</span><div><b>Recibe tu ticket</b><span>Pon tu celular y nombre, solo la primera vez.</span></div></div>
+        <div class="paso"><span class="n">3</span><div><b>Yapea S/ 1</b><span>Con el código de tu ticket en el concepto, antes del cierre.</span></div></div>
+        <div class="paso"><span class="n">4</span><div><b>Sorteo automático</b><span>Los números salen solos y se publican al instante.</span></div></div>
+      </div>
+      <div class="modo-col luk reveal"><h3>🪙 Con tu cuenta y Lukitas</h3><p id="comoLuk">Más barato: desde S/ 0.30 por jugada.</p>
+        <div class="paso"><span class="n">1</span><div><b>Crea tu cuenta</b><span>Gratis, con tu correo y celular.</span></div></div>
+        <div class="paso"><span class="n">2</span><div><b>Recarga Lukitas</b><span>Elige un paquete y yapea una sola vez.</span></div></div>
+        <div class="paso"><span class="n">3</span><div><b>Juega con 1 toque</b><span>Cada jugada descuenta 1 Lukita. Ves tu saldo siempre.</span></div></div>
+        <div class="paso"><span class="n">4</span><div><b>Consulta y cobra</b><span>Tus tickets y resultados, desde tu celular.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prueba" style="padding-top:0">
+  <div class="wrap">
+    <div class="maquina reveal">
+      <span data-luki="maquina"></span>
+      <div>
+        <h2 style="font-family:var(--display);font-weight:800;font-size:1.8rem;margin-bottom:6px">¿No sabes qué números jugar?</h2>
+        <p style="color:#C9D7E3;margin-bottom:18px">Luki te tira una combinación. Si te gusta, la juegas con un toque: entras al juego con los números ya marcados.</p>
+        <div class="mq-modos" id="mqModos"></div>
+        <div class="rodillo" id="rodillo"></div>
+        <div class="mq-btns"><button class="mq-tirar" id="mqTirar">🎲 Tirar otra vez</button><a class="mq-jugar" id="mqJugar" href="#">Jugar con estos números</a></div>
+        <p class="mq-nota">Son números al azar para inspirarte. Tú decides si los juegas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="luki" style="padding-top:20px">
+  <div class="wrap meet">
+    <div class="meet-art reveal"><span data-luki="meet"></span></div>
+    <div class="reveal">
+      <div class="sec-head" style="margin-bottom:0"><span class="tag-sec">La mascota de Jakuna</span><h2>Conoce a Luki 🐰</h2>
+      <p>Luki es un conejito bien pilas, de gorrita verde y siempre con una bolilla en las manos. Se llama así por la <b>luca</b>: con una sola juegas en Jakuna. Y ya sabes: dicen que los conejitos traen suerte. 🍀</p></div>
+      <div class="rasgos">
+        <div class="rasgo"><b>😄 Bacán y cercano</b><span>Te habla como un pata de confianza.</span></div>
+        <div class="rasgo"><b>🔍 Transparente</b><span>Reglas claras y resultados a la vista.</span></div>
+        <div class="rasgo"><b>⚡ Rapidito</b><span>Resultados al toque, sin esperar a nadie.</span></div>
+        <div class="rasgo"><b>💚 Responsable</b><span>Juega solo lo que te sobra, siempre.</span></div>
+      </div>
+      <div class="cita">“Tú eliges los números, <span>yo te cuido la jugada</span>. Y si no sale hoy, no pasa nada, causa.”</div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head centro reveal"><span class="tag-sec">Sin floro</span><h2>Reglas claras, siempre</h2></div>
+    <div class="trust">
+      <div class="reveal"><i>⚙️</i><h3>Sorteo automático</h3><p>El sistema genera los números solo, sin que nadie meta mano.</p></div>
+      <div class="reveal"><i>🎟️</i><h3>Consulta tu ticket</h3><p>Revisa tus jugadas y resultados cuando quieras, desde tu celular.</p></div>
+      <div class="reveal"><i>📜</i><h3>Historial público</h3><p>Todos los resultados anteriores quedan publicados en cada juego.</p></div>
+      <div class="reveal"><i>🤝</i><h3>Premio repartido</h3><p>Si hay varios ganadores en un sorteo, el premio se reparte en partes iguales.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0"><div class="wrap"><div class="app-banner reveal">
+  <div><h3>Jakuna en tu celular</h3><p>Todos los juegos, resultados y tu saldo en un solo lugar. Ábrela y agrégala a tu pantalla de inicio.</p></div>
+  <a id="appLink" href="#">Abrir la app Jakuna</a>
+</div></div></section>
+
+<section id="productos" style="padding-top:0"><div class="wrap">
+  <div class="sec-head reveal"><span class="tag-sec">Ofertas Jakuna</span><h2>Productos destacados</h2></div>
+  <div class="cards" id="prodList"></div>
+</div></section>
+
+<section id="tienda" style="padding-top:0"><div class="wrap"><div class="store reveal">
+  <div><h2>Se viene la tienda Jakuna 🛍️</h2><p>Estamos preparando ofertas bacanes. Únete a nuestro canal de WhatsApp y entérate primero cuando abramos.</p></div>
+  <a href="#" data-href="canal" class="cta dark" target="_blank" rel="noopener">Avísame cuando abra</a>
+</div></div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="sec-head reveal"><span class="tag-sec">Síguenos</span><h2>Entérate de todo primero</h2><p>Resultados, juegos nuevos y promos.</p></div>
+  <div class="social">
+    <a class="soc reveal" data-href="canal" href="#" target="_blank" rel="noopener"><i>📢</i><div><b>Canal de WhatsApp</b><span>Avisos y resultados</span></div></a>
+    <a class="soc reveal" data-href="telegram" href="#" target="_blank" rel="noopener"><i>✈️</i><div><b>Telegram</b><span>Comunidad Jakuna</span></div></a>
+    <a class="soc reveal" data-href="tiktok" href="#" target="_blank" rel="noopener"><i>🎵</i><div><b>TikTok</b><span>@jakunastore</span></div></a>
+    <a class="soc reveal" data-href="facebook" href="#" target="_blank" rel="noopener"><i>👍</i><div><b>Facebook</b><span>Jakuna Perú</span></div></a>
+  </div>
+</div></section>
+
+<section id="faq" style="padding-top:0"><div class="wrap">
+  <div class="sec-head centro reveal"><span class="tag-sec">Preguntas frecuentes</span><h2>¿Dudas? Luki te responde</h2></div>
+  <div class="faq">
+    <details class="reveal"><summary>¿Cuánto cuesta jugar?</summary><p>Cada jugada cuesta S/ 1 con Yape, o 1 Lukita si juegas con tu cuenta. Con los paquetes de Lukitas cada jugada te sale más barata.</p></details>
+    <details class="reveal"><summary>¿Qué son las Lukitas?</summary><p>Son los créditos de tu cuenta Jakuna: 1 Lukita = 1 jugada en cualquier juego. Las compras en paquetes con descuento y las usas cuando quieras, sin yapear cada vez.</p></details>
+    <details class="reveal"><summary>¿Qué diferencia hay entre A una Luca y Luca Express?</summary><p>En A una Luca eliges 3 números del 1 al 20 y hay un sorteo al día, a las 11 p. m. En Luca Express eliges 4 números del 1 al 25 y hay sorteo cada hora, las 24 horas.</p></details>
+    <details class="reveal"><summary>¿Cómo se eligen los números ganadores?</summary><p>El sistema los genera automáticamente a la hora del sorteo y los publica al instante en la página de cada juego, junto con el historial.</p></details>
+    <details class="reveal"><summary>¿Cómo sé que mi jugada es válida?</summary><p>Con Yape: cuando yapeas S/ 1 con el código exacto de tu ticket en el concepto, antes del cierre. Con Lukitas: al instante, ya está pagada. Si juegas después del cierre, tu ticket pasa al siguiente sorteo.</p></details>
+    <details class="reveal"><summary>¿Cuándo gano?</summary><p>Cuando aciertas todos los números del sorteo, en cualquier orden. Si hay varios ganadores, el premio se reparte en partes iguales.</p></details>
+    <details class="reveal"><summary>¿Y si gano, cómo cobro?</summary><p>Escríbenos por WhatsApp con tu código de ticket. Verificamos y te yapeamos el premio.</p></details>
+    <details class="reveal"><summary>¿Olvidé mi usuario o contraseña?</summary><p>Usa el código de seguridad que te llegó al correo cuando creaste tu cuenta (asunto "Jakuna · Tu código de seguridad"). En la página de ingreso toca "Olvidé mi usuario" u "Olvidé mi contraseña".</p></details>
+    <details class="reveal"><summary>¿Quiénes pueden jugar?</summary><p>Solo mayores de 18 años. Juega con lo que te sobra: es un juego para divertirse, no una forma de ganar plata.</p></details>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="foot">
+    <div><span class="marca">ja<b>k</b>una</span><p style="margin-top:10px;line-height:1.6">Marca peruana de juegos de números a una luca. Tú eliges, el sistema sortea. Y muy pronto, también tienda.</p></div>
+    <div><h4>Contacto</h4><ul>
+      <li><a href="#" data-href="whatsapp" target="_blank" rel="noopener">📱 WhatsApp 955 480 091</a></li>
+      <li><a href="#" data-href="canal" target="_blank" rel="noopener">📢 Canal de WhatsApp</a></li>
+      <li><a href="#" data-href="telegram" target="_blank" rel="noopener">✈️ Telegram</a></li>
+      <li><a href="#" data-href="facebook" target="_blank" rel="noopener">👍 Facebook · Jakuna Perú</a></li>
+      <li><a href="#" data-href="tiktok" target="_blank" rel="noopener">🎵 TikTok · @jakunastore</a></li></ul></div>
+    <div><h4>Jakuna</h4><ul id="footGames"></ul></div>
+  </div>
+  <div class="legal"><span><span class="b18">+18</span>Juega con responsabilidad · Sorteos automáticos · Resultados publicados en cada juego</span><span>© <span id="yr"></span> Jakuna Perú</span></div>
+</div></footer>
+
+<a href="#" data-href="whatsapp" class="wa-float" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.2.6 4.4 1.7 6.3L3 29l7.3-1.9c1.8 1 3.8 1.5 5.8 1.5 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.2c-1.9 0-3.7-.5-5.3-1.4l-.4-.2-4.3 1.1 1.2-4.2-.3-.4c-1-1.6-1.5-3.5-1.5-5.4C5.4 9.9 10.2 5.2 16 5.2s10.6 4.7 10.6 10.5S21.8 26.2 16 26.2zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.1 1.4 3.4c.2.2 2.3 3.5 5.6 4.9 2.8 1.1 3.3.9 3.9.8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg></a>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   ✏️ CONFIGURACIÓN JAKUNA — cambia aquí tus datos
+   ========================================================= */
+const CONFIG = {
+  whatsapp: "51955480091",
+  canalWhatsapp: "https://whatsapp.com/channel/0029VbAG93Z6BIEexDepOD28",
+  telegram: "https://t.me/+lvOyCDlt1LYyZjVh",
+  facebook: "https://www.facebook.com/profile.php?id=100085133898109",
+  tiktok: "https://www.tiktok.com/@jakunastore",
+  paginaCuenta: "https://jakunastoreperu-sudo.github.io/login/",
+  paginaWeb: "https://jakunastoreperu-sudo.github.io/jakuna-web/",
+  paginaApp: "https://jakunastoreperu-sudo.github.io/app/",
+  apiCuentas: "https://script.google.com/macros/s/AKfycbxYRKLgAzO9Mwa5W5N6_bMij--psYI4XfH0VJ8FVhd_njinHn4w7zVK93sALJ1rVzx1/exec",
+  // JUEGOS: copia un bloque { ... } para agregar otro. horas: null = cada hora; [23] = 11 p. m.
+  juegos: [
+    { id: "lx", nombre: "Luca Express", titulo: ["Luca", "Express"], color: "#B44FFF", etiqueta: "Cada hora · 24/7",
+      frase: "Elige 4 números del 1 al 25. Sorteo cada hora en punto, día y noche.",
+      elegir: 4, max: 25, premio: 100, cierre: 5, horas: null, sorteos: "24 al día", prefijo: "LX",
+      link: "https://jakunastoreperu-sudo.github.io/LucaExpress/",
+      api: "https://script.google.com/macros/s/AKfycbyTfU3UA7NSAarY0Faz7_lS15xbyKi2MEJy7ztq75jQxPYYhwTguGOn-WeUdR-5rHlW/exec" },
+    { id: "jl", nombre: "A una Luca", titulo: ["A una", "Luca"], color: "#12A877", etiqueta: "Diario · 11:00 p. m.",
+      frase: "Elige 3 números del 1 al 20. Un sorteo al día, a las 11 de la noche.",
+      elegir: 3, max: 20, premio: 100, cierre: 15, horas: [23], sorteos: "1 al día", prefijo: "JL",
+      link: "https://jakunastoreperu-sudo.github.io/A-una-luca/",
+      api: "https://script.google.com/macros/s/AKfycbxRgvyl-UstxrwkMS81b0l0Z-Okq0tdeQDi7sLtryra7HPW-h0CQ_HHH-EeK1KryxKW/exec" }
+  ],
+  // PRODUCTOS (tienda): si está vacía, la sección no se muestra.
+  // Ejemplo: { nombre: "Audífonos inalámbricos", precio: 49.90, antes: 79.90, foto: "audifonos.jpg", link: "" },
+  productos: []
+};
+
+/* ---------------- No necesitas tocar nada desde aquí ---------------- */
+const $ = id => document.getElementById(id);
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const p2 = n => String(n).padStart(2, '0');
+const REDES = { whatsapp: "https://wa.me/" + CONFIG.whatsapp, canal: CONFIG.canalWhatsapp, telegram: CONFIG.telegram, facebook: CONFIG.facebook, tiktok: CONFIG.tiktok };
+document.querySelectorAll('[data-href]').forEach(a => a.href = REDES[a.dataset.href] || '#');
+function toast(m) { const t = $('toast'); if (!t) return; t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400); }
+
+/* ---- Hora de Perú y sorteos ---- */
+const HORA = 3600000, OFF = -5 * HORA;
+const ahoraL = () => Date.now() + OFF;
+const horasDe = g => g.horas || Array.from({ length: 24 }, (_, i) => i);
+const esH = (g, ms) => horasDe(g).includes(new Date(ms).getUTCHours());
+function proximo(g) { let t = Math.floor(ahoraL() / HORA) * HORA + HORA; while (!esH(g, t)) t += HORA; return t; }
+function ultimoSlot(g) { let t = Math.floor(ahoraL() / HORA) * HORA; while (!esH(g, t)) t -= HORA; return t; }
+function cierreMs(g) { return proximo(g) - g.cierre * 60000; }
+function abierto(g) { return ahoraL() < cierreMs(g); }
+function fmt(ms) { const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600); return (h ? h + ':' : '') + p2(Math.floor(s / 60) % 60) + ':' + p2(s % 60); }
+function horaTxt(h) { return `${((h + 11) % 12) + 1}:00 ${h >= 12 ? 'p. m.' : 'a. m.'}`; }
+function diaRel(f) { const d = new Date(ahoraL()).toISOString().slice(0, 10), ay = new Date(ahoraL() - 864e5).toISOString().slice(0, 10); return f === d ? 'Hoy' : f === ay ? 'Ayer' : f.split('-').reverse().slice(0, 2).join('/'); }
+// El juego que conviene jugar ahora: el que cierra primero y sigue abierto
+function juegoUrgente() { return CONFIG.juegos.map(g => ({ g, ms: (abierto(g) ? cierreMs(g) : cierreMs(g) + (g.horas ? 864e5 : HORA)) - ahoraL() })).sort((a, b) => a.ms - b.ms)[0]; }
+function bolasHTML(nums, cls = '') { return nums.map(n => `<span class="bola ${cls}">${n}</span>`).join(''); }
+function linkJuego(g, extra = {}) { const q = new URLSearchParams(extra).toString(); return g.link + (q ? '?' + q : ''); }
+function stickerHTML(g, cls = '') { return `<span class="sticker ${cls}" style="--st:${g.color}" aria-label="${esc(g.nombre)}">${g.titulo.map((w, i) => `<span class="s${i + 1}">${esc(w)}</span>`).join('')}</span>`; }
+function azar(g) { const s = new Set(), r = new Uint32Array(1); while (s.size < g.elegir) { crypto.getRandomValues(r); s.add(1 + r[0] % g.max); } return [...s].sort((a, b) => a - b); }
+
+/* ---- Datos en vivo ---- */
+const VIVO = {};          // id -> { resultados, ok }
+let AHORRO = { pct: 70, desde: 'S/ 0.30', paquetes: [] };
+async function cargarVivo() {
+  await Promise.all(CONFIG.juegos.map(async g => {
+    try { const r = await (await fetch(`${g.api}?accion=resultados&v=${Date.now()}`, { cache: 'no-store' })).json(); VIVO[g.id] = { ok: !!r.ok, resultados: r.resultados || [] }; }
+    catch (e) { VIVO[g.id] = { ok: false, resultados: [] }; }
+  }));
+}
+async function cargarAhorro() {
+  try {
+    const c = await (await fetch(`${CONFIG.apiCuentas}?accion=paquetes`)).json();
+    if (c.ok && c.paquetes.length) {
+      const mejor = c.paquetes.reduce((a, p) => p.precio / p.lukitas < a.precio / a.lukitas ? p : a), por = mejor.precio / mejor.lukitas;
+      AHORRO = { pct: Math.max(...c.paquetes.map(p => p.descuento)), desde: 'S/ ' + (Number.isInteger(por) ? por : por.toFixed(2)), paquetes: c.paquetes };
+    }
+  } catch (e) {}
+  return AHORRO;
+}
+
+/* ---- Sesión Jakuna (la misma de los juegos y /login/) ---- */
+let TOKEN = (() => { try { return localStorage.getItem('jk_token'); } catch (e) { return null; } })();
+let PERFIL = null;
+async function cuentas(accion, data = {}) {
+  const r = await fetch(CONFIG.apiCuentas, { method: 'POST', body: JSON.stringify({ accion, token: TOKEN, ...data }) });
+  const j = await r.json();
+  if (!j.ok && j.error === 'SESION') { try { localStorage.removeItem('jk_token'); } catch (e) {} TOKEN = null; PERFIL = null; }
+  if (!j.ok) throw new Error(j.error || 'Error');
+  return j;
+}
+async function cargarSesion() { if (!TOKEN) return null; try { PERFIL = (await cuentas('sesion')).perfil; } catch (e) { PERFIL = null; } return PERFIL; }
+function urlCuenta(volverA, nombre) { return `${CONFIG.paginaCuenta}?volver=${encodeURIComponent(volverA)}&juego=${encodeURIComponent(nombre)}`; }
+function salirJakuna() { try { localStorage.removeItem('jk_token'); } catch (e) {} TOKEN = null; PERFIL = null; }
+
+/* ---- Luki ---- */
+document.querySelectorAll('[data-luki]').forEach(el => {
+  const svg = $('lukiTpl').content.firstElementChild.cloneNode(true);
+  if (el.dataset.size) svg.classList.add(el.dataset.size);
+  svg.dataset.luki = el.dataset.luki; el.replaceWith(svg);
+});
+const _lt = {};
+function luki(donde, estado, texto, bub) {
+  document.querySelectorAll(`svg[data-luki="${donde}"]`).forEach(el => {
+    el.classList.remove('saluda', 'piensa', 'fiesta', 'triste'); void el.getBoundingClientRect();
+    if (estado) el.classList.add(estado);
+    clearTimeout(_lt[donde]);
+    if (estado && estado !== 'piensa') _lt[donde] = setTimeout(() => el.classList.remove(estado), 2600);
+  });
+  if (bub && texto) $(bub).textContent = texto;
+}
+
+
+/* ================= WEB ================= */
+const AQUI = location.href.split('#')[0].split('?')[0];
+$('yr').textContent = new Date().getFullYear();
+$('appLink').href = CONFIG.paginaApp;
+$('lkCta').href = $('cuentaChip').href = urlCuenta(AQUI, 'la web de Jakuna');
+document.querySelectorAll('#menu a').forEach(a => a.onclick = () => $('menu').classList.remove('open'));
+
+/* Cinta */
+const tk = ['Tú eliges tus números', 'Con una luca juegas por S/ 100', 'Sorteo cada hora', 'Resultados al instante', 'Paga con Yape o Lukitas', '+18 · Juega con responsabilidad'];
+const tkH = tk.map(x => `<span>${x}</span><span>✦</span>`).join('');
+$('tick').innerHTML = tkH + tkH;
+
+/* Tarjetas de juegos */
+$('juegosList').innerHTML = CONFIG.juegos.map(g => `
+  <article class="jcard reveal" style="--st:${g.color}">
+    <div class="jtop">${stickerHTML(g)}<span class="jtag">${esc(g.etiqueta)}</span></div>
+    <p class="frase">${esc(g.frase)}</p>
+    <div class="jvivo">
+      <div><small id="cdL_${g.id}">Cierra en</small><span class="jcd" id="cd_${g.id}">--:--</span></div>
+      <div style="text-align:right"><small id="ulT_${g.id}">Último sorteo</small><div class="bolas" id="ulB_${g.id}">${'<span class="bola">?</span>'.repeat(g.elegir)}</div></div>
+    </div>
+    <div class="jstats"><div><b>S/ ${g.premio}</b><small>Premio</small></div><div><b>${g.elegir} de ${g.max}</b><small>Números</small></div><div><b>${g.sorteos}</b><small>Sorteos</small></div></div>
+    <div class="jctas">
+      <a class="yape" href="${linkJuego(g)}">Jugar con Yape<small>S/ 1 por jugada</small></a>
+      <a class="luk" href="${linkJuego(g, { pago: 'lukitas' })}">Con Lukitas<small class="lkPor">más barato</small></a>
+    </div>
+    <a class="jlink" href="${g.link}">Ver resultados y consultar mi ticket</a>
+  </article>`).join('');
+$('footGames').innerHTML = CONFIG.juegos.map(g => `<li><a href="${g.link}">${esc(g.nombre)}</a></li>`).join('')
+  + `<li><a href="${CONFIG.paginaCuenta}">Mi cuenta y Lukitas</a></li><li><a href="${CONFIG.paginaApp}">App Jakuna</a></li><li><a href="#tienda">Tienda (muy pronto)</a></li>`;
+
+/* Cuentas regresivas y "jugar ahora" al juego que cierra primero */
+function tick() {
+  CONFIG.juegos.forEach(g => {
+    const ab = abierto(g), ms = (ab ? cierreMs(g) : proximo(g)) - ahoraL();
+    $('cd_' + g.id).textContent = fmt(ms);
+    $('cd_' + g.id).classList.toggle('cerrando', ab && ms < 10 * 60000);
+    $('cdL_' + g.id).textContent = ab ? `Cierra en (sorteo ${horaTxt(new Date(proximo(g)).getUTCHours())})` : 'Sorteo en';
+  });
+  const u = juegoUrgente();
+  $('heroCd').textContent = fmt(u.ms);
+  $('c1t').textContent = `${u.g.nombre} cierra en`;
+  $('heroCta').href = linkJuego(u.g);
+  $('heroCta').firstChild.textContent = `Jugar ${u.g.nombre}`;
+  $('heroCtaSub').textContent = `Cierra en ${fmt(u.ms)} · S/ 1 o 1 Lukita`;
+  $('navJugar').href = linkJuego(u.g);
+}
+
+/* Resultados en vivo */
+function pintarVivo() {
+  CONFIG.juegos.forEach(g => {
+    const v = VIVO[g.id], r = v && v.resultados[0];
+    if (!r) return;
+    $('ulB_' + g.id).innerHTML = bolasHTML(r.numeros);
+    $('ulT_' + g.id).textContent = `${diaRel(r.fecha)} ${horaTxt(r.hora)}${r.jugadas ? ` · ${r.jugadas} jugadas` : ''}`;
+  });
+  const g0 = CONFIG.juegos[0], r0 = VIVO[g0.id] && VIVO[g0.id].resultados[0];
+  if (r0) { $('c2t').textContent = `Último ${g0.nombre} · ${horaTxt(r0.hora)}`; $('c2b').innerHTML = bolasHTML(r0.numeros); }
+}
+
+/* Sesión: chip de cuenta y textos personalizados */
+function pintarSesion() {
+  const c = $('cuentaChip');
+  if (PERFIL) {
+    c.innerHTML = `<span class="coin-mini">L</span><b>${PERFIL.saldo}</b> @${esc(PERFIL.usuario)}`;
+    $('heroBub').textContent = PERFIL.saldo > 0 ? `¡Habla, ${PERFIL.nombre}! Tienes ${PERFIL.saldo} Lukitas. ¿Jugamos? 👀` : `¡Habla, ${PERFIL.nombre}! Recarga Lukitas y juega más barato. 👀`;
+    $('lkCta').firstChild.textContent = PERFIL.saldo > 0 ? 'Recargar más Lukitas' : 'Recargar mis Lukitas';
+    $('lkCta').querySelector('small').textContent = `Tienes ${PERFIL.saldo} Lukitas`;
+    luki('hero', 'saluda');
+  }
+}
+
+/* Lukitas: paquetes reales de tu hoja */
+function pintarAhorro() {
+  $('lkAhorro').innerHTML = `<b>Ahorras hasta ${AHORRO.pct}%:</b> cada jugada te sale desde ${AHORRO.desde} en vez de S/ 1.`;
+  $('comoLuk').textContent = `Más barato: desde ${AHORRO.desde} por jugada.`;
+  document.querySelectorAll('.lkPor').forEach(e => e.textContent = `desde ${AHORRO.desde}`);
+  if (!AHORRO.paquetes.length) { $('lkPaq').innerHTML = ''; return; }
+  const max = Math.max(...AHORRO.paquetes.map(p => p.descuento));
+  $('lkPaq').innerHTML = AHORRO.paquetes.map(p => {
+    const por = p.precio / p.lukitas;
+    return `<div class="lk-p${p.descuento === max ? ' mejor' : ''}">${p.descuento > 0 ? `<span class="off" style="position:absolute;top:-8px;right:10px;background:var(--oro);color:#4A3200;border-radius:999px;padding:1px 9px;font-size:.74rem;font-weight:700">-${p.descuento}%</span>` : ''}
+      <div class="n">${p.lukitas}</div><div class="u">Lukitas</div><div class="nom">${esc(p.nombre)}</div>
+      <span class="precio">S/ ${p.precio}</span><span class="por">S/ ${Number.isInteger(por) ? por : por.toFixed(2)} por jugada</span></div>`;
+  }).join('');
+}
+
+/* Máquina de Luki: jugada en 1 toque */
+let mq = 0, mqNums = [];
+function pintarModos() {
+  $('mqModos').innerHTML = CONFIG.juegos.map((g, i) => `<button class="${i === mq ? 'on' : ''}" data-i="${i}">${esc(g.nombre)}</button>`).join('');
+  $('mqModos').querySelectorAll('button').forEach(b => b.onclick = () => { mq = +b.dataset.i; pintarModos(); tirar(); });
+}
+function tirar() {
+  const g = CONFIG.juegos[mq], box = $('rodillo');
+  box.innerHTML = Array(g.elegir).fill('<span class="bola gira">?</span>').join('');
+  luki('maquina', 'piensa');
+  let n = 0;
+  const iv = setInterval(() => {
+    box.querySelectorAll('.bola').forEach(b => b.textContent = 1 + Math.floor(Math.random() * g.max));
+    if (++n > 12) {
+      clearInterval(iv); mqNums = azar(g);
+      box.innerHTML = bolasHTML(mqNums);
+      $('mqJugar').href = linkJuego(g, { n: mqNums.join('-') });
+      $('mqJugar').textContent = `Jugar ${mqNums.join(' · ')} en ${g.nombre}`;
+      luki('maquina', 'fiesta');
+    }
+  }, 70);
+}
+$('mqTirar').onclick = tirar;
+
+/* Productos */
+(function () {
+  const list = CONFIG.productos || [];
+  if (!list.length) { $('productos').style.display = 'none'; return; }
+  const f = n => Number(n).toFixed(2);
+  $('prodList').innerHTML = list.map(x => `<div class="scard reveal">${x.foto ? `<div class="pimg" style="background-image:url('${esc(x.foto)}')"></div>` : ''}
+    <h3>${esc(x.nombre)}</h3><div class="price"><b>S/ ${f(x.precio)}</b>${x.antes ? `<s>S/ ${f(x.antes)}</s>` : ''}</div>
+    <a class="cta-sm" href="${x.link || ('https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent('Hola Jakuna 👋 Me interesa: ' + x.nombre))}" target="_blank" rel="noopener">Lo quiero</a></div>`).join('');
+})();
+
+/* Aparición al hacer scroll */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* Inicio */
+(async function () {
+  tick(); setInterval(tick, 1000);
+  pintarModos(); tirar();
+  setTimeout(() => luki('hero', 'saluda'), 500);
+  cargarAhorro().then(pintarAhorro);
+  cargarSesion().then(pintarSesion);
+  await cargarVivo(); pintarVivo();
+  setInterval(async () => { await cargarVivo(); pintarVivo(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') cargarSesion().then(pintarSesion); });
+})();
+
+</script>
+</body>
+</html>
